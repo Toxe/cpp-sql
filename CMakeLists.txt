@@ -3,10 +3,6 @@ project("SQL" LANGUAGES CXX)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-find_package(LibArchive)
-
-# Theoretisch sollte es reichen CMake mit -DCMAKE_PREFIX_PATH=$SUITE_BUILD aufzurufen,
-# aber aus irgendeinem Grund wird dann die System Version von libarchive.dylib verwendet.
 include_directories("$ENV{SUITE_BUILD}/include")
 
 set(LibMySQLCppConn_LIBRARY "$ENV{SUITE_BUILD}/lib64/libmysqlcppconn.dylib")
