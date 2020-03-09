@@ -1,3 +1,4 @@
 libmariadb
+nlohmann-json
 sqlpp11
 sqlpp11-connector-mysql
