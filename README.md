@@ -1,5 +1,7 @@
 # C++ SQL Examples
 
+[![CI](https://github.com/Toxe/cpp-sql/workflows/CI/badge.svg)](https://github.com/Toxe/cpp-sql/actions)
+
 ## Dependencies
 
 - CMake
