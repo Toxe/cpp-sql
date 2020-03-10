@@ -11,16 +11,19 @@ if(CMAKE_HOST_UNIX)
     find_package(PkgConfig REQUIRED)
 endif()
 
+# for mysql_jdbc.cpp (which is optional)
 find_library(LibMySQLCppConn_LIBRARY mysqlcppconn)
 find_path(LibMySQLCppConn_INCLUDE_DIR mysql/jdbc.h)
 
-find_package(Boost COMPONENTS thread)
-find_package(unofficial-iconv CONFIG REQUIRED)
+# for sqlpp11 examples
 find_package(nlohmann_json CONFIG REQUIRED)
 find_package(sqlpp11 CONFIG REQUIRED)
 find_library(sqlpp11_mysql_LIBRARY sqlpp-mysql)
 
 if(CMAKE_HOST_UNIX)
+    find_package(Boost COMPONENTS thread)
+    find_package(unofficial-iconv CONFIG REQUIRED)
+
     pkg_check_modules(mariadb REQUIRED libmariadb)
     set(mariadb_LIBRARY "${pkgcfg_lib_mariadb_mariadb}")
 endif()
@@ -53,5 +56,10 @@ if(LibMySQLCppConn_LIBRARY)
     target_link_libraries(mysql_jdbc PRIVATE "${LibMySQLCppConn_LIBRARY}")
 endif()
 
-target_link_libraries(sqlpp11_mysql PRIVATE sqlpp11 unofficial::iconv::libiconv unofficial::iconv::libcharset Boost::thread nlohmann_json::nlohmann_json ${sqlpp11_mysql_LIBRARY} ${mariadb_LIBRARY})
 target_link_libraries(dump_ships_json PRIVATE nlohmann_json::nlohmann_json)
+
+if(CMAKE_HOST_WIN32)
+    target_link_libraries(sqlpp11_mysql PRIVATE sqlpp11 nlohmann_json::nlohmann_json ${sqlpp11_mysql_LIBRARY} ${mariadb_LIBRARY})
+else()
+    target_link_libraries(sqlpp11_mysql PRIVATE sqlpp11 nlohmann_json::nlohmann_json ${sqlpp11_mysql_LIBRARY} ${mariadb_LIBRARY} unofficial::iconv::libiconv unofficial::iconv::libcharset Boost::thread)
+endif()
