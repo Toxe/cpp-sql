@@ -45,8 +45,8 @@ int main()
     auto config = read_mysql_config("mysql_conf.json");
     sqlpp::mysql::connection db(config);
 
-    Ships::Ships ships;
-    Ships::ShipRoles shipRoles;
+    Ships::Ships ships{};
+    Ships::ShipRoles shipRoles{};
 
     std::cout << "\n----------------------------------------------------------------------------\n"
               << "SELECT * FROM ships"
