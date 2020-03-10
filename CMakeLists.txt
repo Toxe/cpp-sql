@@ -26,7 +26,7 @@ if(CMAKE_HOST_UNIX)
 endif()
 
 if(CMAKE_HOST_WIN32)
-    find_library(mariadb_LIBRARY mariadb)
+    find_library(mariadb_LIBRARY libmariadb)
 endif()
 
 set(ALL_TARGETS
