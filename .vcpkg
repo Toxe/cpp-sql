@@ -1,3 +1,5 @@
+boost-thread
+libiconv
 libmariadb
 nlohmann-json
 sqlpp11
