@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.14)
 project("SQL" LANGUAGES CXX)
 
+# default compiler options and warnings
+include(cmake/DefaultCompilerOptionsAndWarnings.cmake)
+
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 if(CMAKE_HOST_UNIX)
@@ -10,17 +13,6 @@ endif()
 
 find_library(LibMySQLCppConn_LIBRARY mysqlcppconn)
 find_path(LibMySQLCppConn_INCLUDE_DIR mysql/jdbc.h)
-
-if(LibMySQLCppConn_LIBRARY)
-    add_executable(mysql_jdbc mysql_jdbc.cpp)
-    target_compile_features(mysql_jdbc PUBLIC cxx_std_17)
-    target_compile_options(mysql_jdbc PRIVATE -Wall -Wextra -Wmost -pedantic -Wconversion -Wfloat-equal -Wold-style-cast -fcolor-diagnostics)
-    target_include_directories(mysql_jdbc PRIVATE ${LibMySQLCppConn_INCLUDE_DIR})
-    target_link_libraries(mysql_jdbc PRIVATE "${LibMySQLCppConn_LIBRARY}")
-    set_target_properties(mysql_jdbc PROPERTIES CXX_EXTENSIONS OFF)
-else()
-    message(STATUS "LibMySQLCppConn not found. Skipping building mysql_jdbc.cpp")
-endif()
 
 find_package(Boost COMPONENTS thread)
 find_package(unofficial-iconv CONFIG REQUIRED)
@@ -37,20 +29,29 @@ if(CMAKE_HOST_WIN32)
     find_library(mariadb_LIBRARY mariadb)
 endif()
 
-add_executable(sqlpp11_mysql sqlpp11_mysql.cpp)
-target_compile_features(sqlpp11_mysql PUBLIC cxx_std_17)
-set_target_properties(sqlpp11_mysql PROPERTIES CXX_EXTENSIONS OFF)
-target_link_libraries(sqlpp11_mysql PRIVATE sqlpp11 unofficial::iconv::libiconv Boost::thread nlohmann_json::nlohmann_json ${sqlpp11_mysql_LIBRARY} ${mariadb_LIBRARY})
+set(ALL_TARGETS
+    sqlpp11_mysql
+    dump_ships_json
+)
 
-add_executable(dump_ships_json dump_ships_json.cpp)
-target_compile_features(dump_ships_json PUBLIC cxx_std_17)
-set_target_properties(dump_ships_json PROPERTIES CXX_EXTENSIONS OFF)
-target_link_libraries(dump_ships_json PRIVATE nlohmann_json::nlohmann_json)
-
-if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    target_compile_options(sqlpp11_mysql PRIVATE -Wall -Wextra -Wmost -pedantic -Wconversion -Wfloat-equal -Wold-style-cast -fcolor-diagnostics)
-    target_compile_options(dump_ships_json PRIVATE -Wall -Wextra -Wmost -pedantic -Wconversion -Wfloat-equal -Wold-style-cast -fcolor-diagnostics)
-elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
-    target_compile_options(sqlpp11_mysql PRIVATE /W4)
-    target_compile_options(dump_ships_json PRIVATE /W4)
+# mysql_jdbc is optional
+if(LibMySQLCppConn_LIBRARY)
+    list(APPEND ALL_TARGETS mysql_jdbc)
+else()
+    message(STATUS "LibMySQLCppConn not found. Skipping building mysql_jdbc.cpp")
 endif()
+
+foreach(target ${ALL_TARGETS})
+    add_executable(${target} ${target}.cpp)
+    target_compile_features(${target} PUBLIC cxx_std_17)
+    target_compile_options(${target} PRIVATE ${DEFAULT_COMPILER_OPTIONS_AND_WARNINGS})
+    set_target_properties(${target} PROPERTIES CXX_EXTENSIONS OFF)
+endforeach()
+
+if(LibMySQLCppConn_LIBRARY)
+    target_include_directories(mysql_jdbc PRIVATE ${LibMySQLCppConn_INCLUDE_DIR})
+    target_link_libraries(mysql_jdbc PRIVATE "${LibMySQLCppConn_LIBRARY}")
+endif()
+
+target_link_libraries(sqlpp11_mysql PRIVATE sqlpp11 unofficial::iconv::libiconv unofficial::iconv::libcharset Boost::thread nlohmann_json::nlohmann_json ${sqlpp11_mysql_LIBRARY} ${mariadb_LIBRARY})
+target_link_libraries(dump_ships_json PRIVATE nlohmann_json::nlohmann_json)
