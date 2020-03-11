@@ -21,10 +21,12 @@ find_package(Sqlpp11 CONFIG REQUIRED)
 find_library(sqlpp11_mysql_LIBRARY sqlpp-mysql)
 
 if(CMAKE_HOST_UNIX)
-    find_package(unofficial-iconv CONFIG REQUIRED)
-
     pkg_check_modules(mariadb REQUIRED libmariadb)
     set(mariadb_LIBRARY "${pkgcfg_lib_mariadb_mariadb}")
+endif()
+
+if(CMAKE_HOST_APPLE)
+    find_package(unofficial-iconv CONFIG REQUIRED)
 endif()
 
 if(CMAKE_HOST_WIN32)
@@ -59,6 +61,8 @@ target_link_libraries(dump_ships_json PRIVATE nlohmann_json::nlohmann_json)
 
 if(CMAKE_HOST_WIN32)
     target_link_libraries(sqlpp11_mysql PRIVATE nlohmann_json::nlohmann_json ${sqlpp11_mysql_LIBRARY} ${mariadb_LIBRARY})
-else()
+elseif(CMAKE_HOST_APPLE)
     target_link_libraries(sqlpp11_mysql PRIVATE nlohmann_json::nlohmann_json ${sqlpp11_mysql_LIBRARY} ${mariadb_LIBRARY} unofficial::iconv::libiconv unofficial::iconv::libcharset)
+else()
+    target_link_libraries(sqlpp11_mysql PRIVATE nlohmann_json::nlohmann_json ${sqlpp11_mysql_LIBRARY} ${mariadb_LIBRARY})
 endif()
