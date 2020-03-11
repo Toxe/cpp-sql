@@ -17,7 +17,7 @@ find_path(LibMySQLCppConn_INCLUDE_DIR mysql/jdbc.h)
 
 # for sqlpp11 examples
 find_package(nlohmann_json CONFIG REQUIRED)
-find_package(sqlpp11 CONFIG REQUIRED)
+find_package(Sqlpp11 CONFIG REQUIRED)
 find_library(sqlpp11_mysql_LIBRARY sqlpp-mysql)
 
 if(CMAKE_HOST_UNIX)
