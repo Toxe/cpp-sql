@@ -24,16 +24,16 @@ if(CMAKE_HOST_UNIX)
     # macOS and Linux
     pkg_check_modules(mariadb REQUIRED libmariadb)
     set(mariadb_LIBRARY "${pkgcfg_lib_mariadb_mariadb}")
-endif()
 
-if(CMAKE_HOST_UNIX AND NOT CMAKE_HOST_APPLE)
-    # Linux
-    find_package(Threads REQUIRED)
-endif()
+    if(NOT CMAKE_HOST_APPLE)
+        # Linux only
+        find_package(Threads REQUIRED)
+    endif()
 
-if(CMAKE_HOST_APPLE)
-    # macOS
-    find_package(unofficial-iconv CONFIG REQUIRED)
+    if(CMAKE_HOST_APPLE)
+        # macOS only
+        find_package(unofficial-iconv CONFIG REQUIRED)
+    endif()
 endif()
 
 if(CMAKE_HOST_WIN32)
