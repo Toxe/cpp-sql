@@ -81,7 +81,7 @@ int main()
     }
 
     std::cout << "\n----------------------------------------------------------------------------\n"
-              << "SELECT id, model, length AS meters, length * 3.2808 AS feet FROM ships WHERE length <= 20"
+              << "SELECT id, model, length, length * 3.2808 AS feet FROM ships WHERE length <= 20"
               << "\n----------------------------------------------------------------------------\n";
 
     for (const auto& row : db(select(ships.id, ships.model, ships.length, (ships.length * 3.2808).as(feet)).from(ships).where(ships.length <= 20))) {
