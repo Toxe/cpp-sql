@@ -37,8 +37,8 @@ std::shared_ptr<sqlpp::mysql::connection_config> read_mysql_config(const char* f
     return config;
 }
 
-SQLPP_ALIAS_PROVIDER(feet);
-SQLPP_ALIAS_PROVIDER(col_count);
+SQLPP_ALIAS_PROVIDER(feet)
+SQLPP_ALIAS_PROVIDER(col_count)
 
 int main()
 {
