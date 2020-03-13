@@ -1,4 +1,4 @@
 /build*
 /.vscode
-/mysql_conf.json
+/sqlpp11_mysql.json
 /mysql_connector_jdbc.json

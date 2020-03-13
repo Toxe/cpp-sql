@@ -7,7 +7,7 @@
 
 // Read JSON config file.
 //
-// Example "mysql_conf.json":
+// Example "sqlpp11_mysql.json":
 //
 //   {
 //       "user": "username",
@@ -42,7 +42,7 @@ SQLPP_ALIAS_PROVIDER(col_count)
 
 int main()
 {
-    auto config = read_mysql_config("mysql_conf.json");
+    auto config = read_mysql_config("sqlpp11_mysql.json");
     sqlpp::mysql::connection db(config);
 
     Ships::Ships ships{};
