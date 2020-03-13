@@ -1,12 +1,40 @@
+#include <fstream>
 #include <iostream>
 #include <memory>
 #include <mysql/jdbc.h>
+#include <nlohmann/json.hpp>
+
+// Read JSON config file.
+//
+// Example "mysql_conf.json":
+//
+//   {
+//       "hostName": "localhost",
+//       "userName": "username",
+//       "password": "password",
+//       "port": 3306
+//   }
+sql::ConnectOptionsMap read_mysql_config(const char* filename)
+{
+    std::ifstream in(filename);
+    nlohmann::json data;
+
+    in >> data;
+    sql::ConnectOptionsMap connection_properties;
+
+    if (!data["hostName"].empty()) connection_properties["hostName"] = data["hostName"].get<std::string>();
+    if (!data["userName"].empty()) connection_properties["userName"] = data["userName"].get<std::string>();
+    if (!data["password"].empty()) connection_properties["password"] = data["password"].get<std::string>();
+    if (!data["port"].empty()) connection_properties["port"] = data["port"].get<int>();
+    if (!data["readDefaultFile"].empty()) connection_properties["readDefaultFile"] = data["readDefaultFile"].get<std::string>();
+    if (!data["socket"].empty()) connection_properties["socket"] = data["socket"].get<std::string>();
+
+    return connection_properties;
+}
 
 int main()
 {
-    sql::ConnectOptionsMap connection_properties;
-    connection_properties["readDefaultFile"] = "~/.my.cnf";
-    connection_properties["socket"]          = "/Applications/MAMP/tmp/mysql/mysql.sock";
+    auto connection_properties = read_mysql_config("mysql_connector_jdbc.json");
 
     sql::mysql::MySQL_Driver* driver = sql::mysql::get_driver_instance();
     std::unique_ptr<sql::Connection> con(driver->connect(connection_properties));
