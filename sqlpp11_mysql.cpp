@@ -37,6 +37,7 @@ std::shared_ptr<sqlpp::mysql::connection_config> read_mysql_config(const char* f
     return config;
 }
 
+// these need to be declared at global scope
 SQLPP_ALIAS_PROVIDER(feet)
 SQLPP_ALIAS_PROVIDER(col_count)
 
@@ -97,10 +98,19 @@ int main()
     }
 
     std::cout << "\n----------------------------------------------------------------------------\n"
-              << "SELECT ship_class, COUNT(*) AS `col_count` FROM ships GROUP BY ship_class"
+              << "SELECT ship_class, COUNT(*) AS col_count FROM ships GROUP BY ship_class HAVING col_count > 1 ORDER BY col_count DESC"
               << "\n----------------------------------------------------------------------------\n";
 
-    for (const auto& row : db(select(ships.shipClass, count(ships.shipClass).as(col_count)).from(ships).unconditionally().group_by(ships.shipClass))) {
+    const auto ships_count = count(ships.shipClass);
+
+    for (const auto& row : db(select(ships.shipClass, ships_count.as(col_count)).from(ships).unconditionally().group_by(ships.shipClass).having(ships_count > 1).order_by(ships_count.desc()))) {
+        std::cout << row.shipClass << ": " << row.col_count << '\n';
+    }
+
+    std::cout << "----------------------------------------------------------------------------\n";
+
+    // longer alternative that does exactly the same
+    for (const auto& row : db(select(ships.shipClass, count(ships.shipClass).as(col_count)).from(ships).unconditionally().group_by(ships.shipClass).having(count(ships.shipClass) > 1).order_by(count(ships.shipClass).desc()))) {
         std::cout << row.shipClass << ": " << row.col_count << '\n';
     }
 
