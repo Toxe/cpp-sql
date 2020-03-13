@@ -11,7 +11,7 @@ if(CMAKE_HOST_UNIX)
     find_package(PkgConfig REQUIRED)
 endif()
 
-# for mysql_jdbc.cpp (which is optional)
+# for mysql_connector_jdbc.cpp (which is optional)
 find_library(LibMySQLCppConn_LIBRARY mysqlcppconn)
 find_path(LibMySQLCppConn_INCLUDE_DIR mysql/jdbc.h)
 
@@ -46,11 +46,11 @@ set(ALL_TARGETS
     dump_ships_json
 )
 
-# mysql_jdbc is optional
+# mysql_connector_jdbc is optional
 if(LibMySQLCppConn_LIBRARY)
-    list(APPEND ALL_TARGETS mysql_jdbc)
+    list(APPEND ALL_TARGETS mysql_connector_jdbc)
 else()
-    message(STATUS "LibMySQLCppConn not found. Skipping building mysql_jdbc.cpp")
+    message(STATUS "LibMySQLCppConn not found. Skipping building mysql_connector_jdbc.cpp")
 endif()
 
 foreach(target ${ALL_TARGETS})
@@ -61,8 +61,8 @@ foreach(target ${ALL_TARGETS})
 endforeach()
 
 if(LibMySQLCppConn_LIBRARY)
-    target_include_directories(mysql_jdbc PRIVATE ${LibMySQLCppConn_INCLUDE_DIR})
-    target_link_libraries(mysql_jdbc PRIVATE "${LibMySQLCppConn_LIBRARY}")
+    target_include_directories(mysql_connector_jdbc PRIVATE ${LibMySQLCppConn_INCLUDE_DIR})
+    target_link_libraries(mysql_connector_jdbc PRIVATE "${LibMySQLCppConn_LIBRARY}")
 endif()
 
 target_link_libraries(dump_ships_json PRIVATE nlohmann_json::nlohmann_json)
