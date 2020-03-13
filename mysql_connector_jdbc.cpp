@@ -6,7 +6,7 @@
 
 // Read JSON config file.
 //
-// Example "mysql_conf.json":
+// Example "mysql_connector_jdbc.json":
 //
 //   {
 //       "hostName": "localhost",
@@ -40,15 +40,17 @@ int main()
     std::unique_ptr<sql::Connection> con(driver->connect(connection_properties));
     std::unique_ptr<sql::Statement> stmt(con->createStatement());
 
-    stmt->execute("USE contiview");
-    std::unique_ptr<sql::ResultSet> res(stmt->executeQuery("SELECT * FROM content_object ORDER BY id LIMIT 10"));
+    stmt->execute("USE ships");
+    std::unique_ptr<sql::ResultSet> res(stmt->executeQuery("SELECT * FROM ships ORDER BY category, affiliation, model"));
 
-    std::cout << "id" << "\t" << "parent" << "\t" << "type" << std::endl;
-    std::cout << "----------------------------" << std::endl;
+    std::cout << std::left << std::setw(6) << "id" << std::setw(20) << "category" << std::setw(20) << "affiliation" << "model" << '\n';
+    std::cout << "---------------------------------------------------------------------------" << '\n';
 
     while (res->next()) {
-        std::cout << res->getString("id")     << "\t"
-                  << res->getString("parent") << "\t"
-                  << res->getString("type")   << std::endl;
+        std::cout << std::left
+                  << std::setw(6)  << res->getString("id")
+                  << std::setw(20) << res->getString("category")
+                  << std::setw(20) << res->getString("affiliation")
+                  << res->getString("model") << '\n';
     }
 }
