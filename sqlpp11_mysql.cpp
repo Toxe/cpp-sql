@@ -38,7 +38,6 @@ std::shared_ptr<sqlpp::mysql::connection_config> read_mysql_config(const char* f
 }
 
 // these need to be declared at global scope
-SQLPP_ALIAS_PROVIDER(feet)
 SQLPP_ALIAS_PROVIDER(col_count)
 
 int main()
@@ -82,11 +81,13 @@ int main()
     }
 
     std::cout << "\n----------------------------------------------------------------------------\n"
-              << "SELECT id, model, length, length * 3.2808 AS feet FROM ships WHERE length <= 20"
+              << "SELECT id, model, length, length * 3.2808 AS feet FROM ships WHERE (length * 3.2808) <= 100 ORDER BY feet DESC"  // it is not allowed to use an alias in WHERE
               << "\n----------------------------------------------------------------------------\n";
 
-    for (const auto& row : db(select(ships.id, ships.model, ships.length, (ships.length * 3.2808).as(feet)).from(ships).where(ships.length <= 20))) {
-        std::cout << row.id << ": " << row.model << " = " << row.length << " meters (or " << row.feet << " feet)\n";
+    const auto feet = ships.length * 3.2808;
+
+    for (const auto& row : db(select(ships.id, ships.model, ships.length, feet.as(sqlpp::alias::f)).from(ships).where(feet <= 100).order_by(feet.desc()))) {
+        std::cout << row.id << ": " << row.model << " = " << row.length << " meters (or " << row.f << " feet)\n";
     }
 
     std::cout << "\n----------------------------------------------------------------------------\n"
