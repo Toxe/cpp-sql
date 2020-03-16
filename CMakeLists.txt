@@ -56,6 +56,7 @@ endif()
 set(ALL_TARGETS
     sqlpp11_mysql
     dump_ships_json
+    generate_performance_data
 )
 
 # mysql_connector_jdbc is optional
