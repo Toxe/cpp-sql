@@ -2,8 +2,11 @@
 #include <iostream>
 #include <string>
 
-int main()
+int main(int argc, char* argv[])
 {
+    if (argc < 2)
+        throw std::runtime_error{"missing performance data filename"};
+
     std::cout << "DROP TABLE IF EXISTS performance;\n"
                  "CREATE TABLE performance (\n"
                  "    id           INT NOT NULL AUTO_INCREMENT,\n"
@@ -18,7 +21,7 @@ int main()
                  ") CHARSET=utf8 COLLATE=utf8_unicode_ci;\n"
                  "INSERT INTO performance (time, request, duration, user, ip_address, action, user_agent) VALUES\n";
 
-    std::ifstream in{"out.txt"};
+    std::ifstream in{argv[1]};
     bool add_endline = false;
 
     while (in) {
