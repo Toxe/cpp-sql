@@ -12,6 +12,8 @@ if(CMAKE_HOST_UNIX)
 endif()
 
 find_package(nlohmann_json CONFIG REQUIRED)
+find_package(date CONFIG REQUIRED)
+find_package(Threads REQUIRED)
 
 # for mysql_connector_jdbc.cpp
 find_library(LibMySQLCppConn_LIBRARY mysqlcppconn-static PATHS ${MYSQL_CONNECTOR_CPP_DIR}/lib DOC "MySQL Connector/C++ library")
@@ -36,11 +38,6 @@ if(CMAKE_HOST_UNIX)
     # macOS and Linux
     pkg_check_modules(mariadb REQUIRED libmariadb)
     set(mariadb_LIBRARY "${pkgcfg_lib_mariadb_mariadb}")
-
-    if(NOT CMAKE_HOST_APPLE)
-        # Linux only
-        find_package(Threads REQUIRED)
-    endif()
 
     if(CMAKE_HOST_APPLE)
         # macOS only
@@ -76,7 +73,12 @@ if(LibMySQLCppConn_LIBRARY)
     target_link_libraries(mysql_connector_jdbc PRIVATE nlohmann_json::nlohmann_json ${LibMySQLCppConn_LIBRARY} ${libresolv})
 endif()
 
+get_filename_component(date_INCLUDE_DIR ${HinnantDate_INCLUDE_FILE} DIRECTORY)
+
+target_include_directories(generate_performance_data PRIVATE ${date_INCLUDE_DIR})
+
 target_link_libraries(dump_ships_json PRIVATE nlohmann_json::nlohmann_json)
+target_link_libraries(generate_performance_data PRIVATE date::date date::tz)
 
 if(CMAKE_HOST_WIN32)
     # Windows
