@@ -31,13 +31,22 @@ int main()
     const std::vector<std::string> verbs{"create", "delete", "update", "move", "download", "archive"};
     const std::vector<std::string> dialogs{"dialog_create", "dialog_delete", "dialog_show", "dialog_move", "dialog_download"};
     const std::vector<std::string> content{"view", "view_all", "view_archive"};
+    const std::vector<std::string> user_agents{
+        "Mozilla/5.0 (iPhone; CPU iPhone OS 12_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148",
+        "Mozilla/5.0 (Linux; U; Android 2.2) AppleWebKit/533.1 (KHTML, like Gecko) Version/4.0 Mobile Safari/533.1",
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10; rv:33.0) Gecko/20100101 Firefox/33.0",
+        "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_6; en-en) AppleWebKit/533.19.4 (KHTML, like Gecko) Version/5.0.3 Safari/533.19.4",
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36",
+        "Mozilla/5.0 CK={} (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko"};
 
     std::random_device rd;
     std::mt19937 gen(rd());
 
     std::discrete_distribution<std::size_t> dist_source({60, 10, 30});
     std::uniform_int_distribution<std::size_t> dist_prefixes(0, prefixes.size() - 1);
+    std::uniform_int_distribution<std::size_t> dist_user_agents(0, user_agents.size() - 1);
     std::uniform_int_distribution<int> dist_user(1001, 1200);
+    std::uniform_int_distribution<int> dist_ip_address(0, 255);
 
     const std::vector<float> time_increase_intervals{0, 10, 60};
     const std::vector<float> time_increase_densities{20, 3, 1};
@@ -59,6 +68,8 @@ int main()
                   << ++request << '\t'
                   << pg.duration() << '\t'
                   << dist_user(gen) << '\t'
-                  << prefixes[dist_prefixes(gen)] << "." << pg.postfix() << '\n';
+                  << "192.168." << dist_ip_address(gen) << '.' << dist_ip_address(gen) << '\t'
+                  << prefixes[dist_prefixes(gen)] << "." << pg.postfix() << '\t'
+                  << user_agents[dist_user_agents(gen)] << '\n';
     }
 }
