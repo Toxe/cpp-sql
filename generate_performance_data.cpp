@@ -37,6 +37,7 @@ int main()
 
     std::discrete_distribution<std::size_t> dist_source({60, 10, 30});
     std::uniform_int_distribution<std::size_t> dist_prefixes(0, prefixes.size() - 1);
+    std::uniform_int_distribution<int> dist_user(1001, 1200);
 
     const std::vector<float> time_increase_intervals{0, 10, 60};
     const std::vector<float> time_increase_densities{20, 3, 1};
@@ -54,6 +55,10 @@ int main()
         auto pg{postfix_generators[dist_source(gen)]};
         time += std::chrono::seconds{static_cast<int>(dist_time_increase(gen))};
 
-        std::cout << date::format("%F %T", time) << ',' << ++request << ',' << prefixes[dist_prefixes(gen)] << "." << pg.postfix() << ',' << pg.duration() << '\n';
+        std::cout << date::format("%F %T", time) << '\t'
+                  << ++request << '\t'
+                  << pg.duration() << '\t'
+                  << dist_user(gen) << '\t'
+                  << prefixes[dist_prefixes(gen)] << "." << pg.postfix() << '\n';
     }
 }
