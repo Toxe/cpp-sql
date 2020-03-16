@@ -1,10 +1,11 @@
+#include "date.h"
+#include "tz.h"
 #include <array>
 #include <chrono>
 #include <iostream>
 #include <random>
+#include <stdexcept>
 #include <string>
-#include "date.h"
-#include "tz.h"
 
 struct Generator {
     Generator(const std::vector<std::string>& postfixes, std::mt19937& gen, int min_duratiton, int max_duration)
@@ -25,8 +26,13 @@ private:
     std::uniform_int_distribution<int> dist_duration_;
 };
 
-int main()
+int main(int argc, char* argv[])
 {
+    if (argc < 2)
+        throw std::runtime_error{"missing number of datasets"};
+
+    const int num_datasets = std::stoi(argv[1]);
+
     const std::vector<std::string> prefixes{"doc", "project", "user", "collection", "file"};
     const std::vector<std::string> verbs{"create", "delete", "update", "move", "download", "archive"};
     const std::vector<std::string> dialogs{"dialog_create", "dialog_delete", "dialog_show", "dialog_move", "dialog_download"};
@@ -60,7 +66,7 @@ int main()
     int request = 1'000'000;
     auto time = std::chrono::floor<std::chrono::seconds>(std::chrono::system_clock::now());
 
-    for (int i = 0; i < 10; ++i) {
+    for (int i = 0; i < num_datasets; ++i) {
         auto pg{postfix_generators[dist_source(gen)]};
         time += std::chrono::seconds{static_cast<int>(dist_time_increase(gen))};
 
