@@ -14,7 +14,7 @@ jobs:
       CXXFLAGS: -stdlib=libc++
     steps:
       - uses: actions/checkout@v2
-      - run: brew install ninja
+      - run: brew install ninja pkg-config
       - run: /bin/bash .ci/install-vcpkg.sh "$GITHUB_WORKSPACE"
       - run: /bin/bash .ci/build-project.sh
 
@@ -26,7 +26,7 @@ jobs:
       CXX: g++-9
     steps:
       - uses: actions/checkout@v2
-      - run: brew install ninja
+      - run: brew install ninja pkg-config
       - run: /bin/bash .ci/install-vcpkg.sh "$GITHUB_WORKSPACE"
       - run: /bin/bash .ci/build-project.sh
 
