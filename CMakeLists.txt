@@ -59,7 +59,10 @@ set(ALL_TARGETS
 
 # mysql_connector_jdbc is optional
 if(LibMySQLCppConn_LIBRARY AND LibMySQLCppConn_INCLUDE_DIR)
-    list(APPEND ALL_TARGETS mysql_connector_jdbc)
+    list(APPEND ALL_TARGETS
+         mysql_connector_jdbc
+         performance_mysql_connector_jdbc_insert
+    )
 endif()
 
 foreach(target ${ALL_TARGETS})
@@ -71,7 +74,10 @@ endforeach()
 
 if(LibMySQLCppConn_LIBRARY)
     target_include_directories(mysql_connector_jdbc PRIVATE ${LibMySQLCppConn_INCLUDE_DIR} ${Boost_INCLUDE_DIRS})
+    target_include_directories(performance_mysql_connector_jdbc_insert PRIVATE ${LibMySQLCppConn_INCLUDE_DIR} ${Boost_INCLUDE_DIRS})
+
     target_link_libraries(mysql_connector_jdbc PRIVATE nlohmann_json::nlohmann_json ${LibMySQLCppConn_LIBRARY} ${libresolv})
+    target_link_libraries(performance_mysql_connector_jdbc_insert PRIVATE nlohmann_json::nlohmann_json ${LibMySQLCppConn_LIBRARY} ${libresolv})
 endif()
 
 get_filename_component(date_INCLUDE_DIR ${HinnantDate_INCLUDE_FILE} DIRECTORY)
