@@ -158,16 +158,21 @@ std::unique_ptr<sql::Connection> connect(sql::ConnectOptionsMap& connection_prop
     return con;
 }
 
-int main()
+int main(int argc, char* argv[])
 {
+    if (argc < 2)
+        throw std::runtime_error{"missing performance data filename"};
+
+    const std::string performance_data_filename{argv[1]};
+
     auto connection_properties = read_mysql_config("mysql_connector_jdbc.json");
     std::unique_ptr<sql::Connection> con{connect(connection_properties)};
 
     drop_table(con.get(), "performance");
     create_table(con.get(), "performance");
-    import_data_single_inserts(con.get(), "performance", "performance_data_1000.txt");
+    import_data_single_inserts(con.get(), "performance", performance_data_filename);
 
     drop_table(con.get(), "performance");
     create_table(con.get(), "performance");
-    import_data_combined_inserts(con.get(), "performance", "performance_data_1000.txt");
+    import_data_combined_inserts(con.get(), "performance", performance_data_filename);
 }
