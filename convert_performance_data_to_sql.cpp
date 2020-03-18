@@ -2,11 +2,31 @@
 #include <iostream>
 #include <stdexcept>
 #include <string>
+#include <vector>
+
+void insert_multi(const std::vector<std::string>& lines)
+{
+    std::string sql{"INSERT INTO performance (time, request, duration, user, ip_address, action, user_agent) VALUES\n"};
+
+    for (std::size_t i = 0; i < lines.size(); ++i) {
+        sql += lines[i];
+
+        if (i < (lines.size() - 1))
+            sql += ",\n";
+    }
+
+    std::cout << sql << ";\n";
+}
 
 int main(int argc, char* argv[])
 {
     if (argc < 2)
         throw std::runtime_error{"missing performance data filename"};
+
+    std::ifstream in{argv[1]};
+
+    if (!in.is_open())
+        throw std::runtime_error{"unable to open input file"};
 
     std::cout << "DROP TABLE IF EXISTS performance;\n"
                  "CREATE TABLE performance (\n"
@@ -19,11 +39,9 @@ int main(int argc, char* argv[])
                  "    action       VARCHAR(64) NOT NULL,\n"
                  "    user_agent   VARCHAR(255) NOT NULL,\n"
                  "    PRIMARY KEY (id)\n"
-                 ") CHARSET=utf8 COLLATE=utf8_unicode_ci;\n"
-                 "INSERT INTO performance (time, request, duration, user, ip_address, action, user_agent) VALUES\n";
+                 ") CHARSET=utf8 COLLATE=utf8_unicode_ci;\n";
 
-    std::ifstream in{argv[1]};
-    bool add_endline = false;
+    std::vector<std::string> lines;
 
     while (in) {
         std::string s1;  if (!std::getline(in, s1, '\t')) break;
@@ -34,13 +52,14 @@ int main(int argc, char* argv[])
         std::string s6;  if (!std::getline(in, s6, '\t')) break;
         std::string s7;  if (!std::getline(in, s7))       break;
 
-        if (add_endline)
-            std::cout << ",\n";
-        else
-            add_endline = true;
+        lines.emplace_back("(\"" + s1 + "\"," + s2 + "," + s3 + "," + s4 + ",\"" + s5 + "\",\"" + s6 + "\",\"" + s7 + "\")");
 
-        std::cout << "(\"" << s1 << "\"," << s2 << "," << s3 << "," << s4 << ",\"" << s5 << "\",\"" << s6 << "\",\"" << s7 << "\")";
+        if (lines.size() == 100) {
+            insert_multi(lines);
+            lines.clear();
+        }
     }
 
-    std::cout << ";\n";
+    if (lines.size() > 0)
+        insert_multi(lines);
 }
