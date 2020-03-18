@@ -2,8 +2,11 @@
 #include <fstream>
 #include <iostream>
 #include <memory>
+#include <thread>
 #include <mysql/jdbc.h>
 #include <nlohmann/json.hpp>
+
+using namespace std::chrono_literals;
 
 void warmup(const std::string& filename)
 {
@@ -158,6 +161,9 @@ void create_table(sql::Connection* con, const std::string& table_name)
                   "    user_agent   VARCHAR(255) NOT NULL,"
                   "    PRIMARY KEY (id)"
                   ") CHARSET=utf8 COLLATE=utf8_unicode_ci");
+
+    stmt.release();
+    std::this_thread::sleep_for(500ms);
 }
 
 std::unique_ptr<sql::Connection> connect(sql::ConnectOptionsMap& connection_properties)
