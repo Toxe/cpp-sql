@@ -5,6 +5,17 @@
 #include <mysql/jdbc.h>
 #include <nlohmann/json.hpp>
 
+void warmup(const std::string& filename)
+{
+    std::ifstream in{filename};
+    std::string line;
+
+    std::cout << "Warmup (" << filename << ")...\n";
+
+    while (std::getline(in, line))
+        ;
+}
+
 // Read JSON config file.
 //
 // Example "mysql_connector_jdbc.json":
@@ -167,6 +178,8 @@ int main(int argc, char* argv[])
 
     auto connection_properties = read_mysql_config("mysql_connector_jdbc.json");
     std::unique_ptr<sql::Connection> con{connect(connection_properties)};
+
+    warmup(performance_data_filename);
 
     drop_table(con.get(), "performance");
     create_table(con.get(), "performance");
