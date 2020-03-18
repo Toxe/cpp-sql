@@ -2,3 +2,4 @@
 /.vscode
 /sqlpp11_mysql.json
 /mysql_connector_jdbc.json
+/performance_data*
