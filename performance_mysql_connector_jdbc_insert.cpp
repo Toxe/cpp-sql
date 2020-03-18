@@ -2,7 +2,10 @@
 #include <fstream>
 #include <iostream>
 #include <memory>
+#include <stdexcept>
+#include <string>
 #include <thread>
+#include <vector>
 #include <mysql/jdbc.h>
 #include <nlohmann/json.hpp>
 
@@ -80,11 +83,48 @@ void import_data_single_inserts(sql::Connection* con, const std::string& table_n
     std::cout << "  --> Imported " << count << " rows in " << std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0).count() << " ms\n";
 }
 
+struct Dataset {
+    Dataset(std::ifstream& in) {
+        if (!std::getline(in, s1, '\t')) throw std::runtime_error{"misformed input data"};
+        if (!std::getline(in, s2, '\t')) throw std::runtime_error{"misformed input data"};
+        if (!std::getline(in, s3, '\t')) throw std::runtime_error{"misformed input data"};
+        if (!std::getline(in, s4, '\t')) throw std::runtime_error{"misformed input data"};
+        if (!std::getline(in, s5, '\t')) throw std::runtime_error{"misformed input data"};
+        if (!std::getline(in, s6, '\t')) throw std::runtime_error{"misformed input data"};
+        if (!std::getline(in, s7))       throw std::runtime_error{"misformed input data"};
+    }
+
+    std::string s1;
+    std::string s2;
+    std::string s3;
+    std::string s4;
+    std::string s5;
+    std::string s6;
+    std::string s7;
+};
+
+void insert_multi(sql::Statement* stmt, const std::string& table_name, const std::vector<Dataset>& datasets)
+{
+    std::string sql{"INSERT INTO " + table_name + " (time, request, duration, user, ip_address, action, user_agent) VALUES "};
+
+    for (std::size_t i = 0; i < datasets.size(); ++i) {
+        const auto& ds = datasets[i];
+        std::string s{"(\"" + ds.s1 + "\"," + ds.s2 + "," + ds.s3 + "," + ds.s4 + ",\"" + ds.s5 + "\",\"" + ds.s6 + "\",\"" + ds.s7 + "\")"};
+
+        sql += s;
+
+        if (i < (datasets.size() - 1))
+            sql += ",";
+    }
+
+    stmt->execute(sql);
+}
+
 void import_data_combined_inserts(sql::Connection* con, const std::string& table_name, const std::string& filename)
 {
     std::cout << "* Import data (combined INSERTs)...\n";
 
-    std::vector<std::string> messages;
+    std::vector<Dataset> datasets;
     std::ifstream in{filename};
     int count = 0;
     auto t0 = std::chrono::high_resolution_clock::now();
@@ -92,43 +132,22 @@ void import_data_combined_inserts(sql::Connection* con, const std::string& table
     std::unique_ptr<sql::Statement> stmt(con->createStatement());
 
     while (in) {
-        std::string s1;  if (!std::getline(in, s1, '\t')) break;
-        std::string s2;  if (!std::getline(in, s2, '\t')) break;
-        std::string s3;  if (!std::getline(in, s3, '\t')) break;
-        std::string s4;  if (!std::getline(in, s4, '\t')) break;
-        std::string s5;  if (!std::getline(in, s5, '\t')) break;
-        std::string s6;  if (!std::getline(in, s6, '\t')) break;
-        std::string s7;  if (!std::getline(in, s7))       break;
+        try {
+            datasets.emplace_back(in);
+        } catch (std::runtime_error& e) {
+            break;
+        }
 
-        messages.push_back(std::string{"(\"" + s1 + "\"," + s2 + "," + s3 + "," + s4 + ",\"" + s5 + "\",\"" + s6 + "\",\"" + s7 + "\")"});
-        ++count;
-
-        if (messages.size() >= 100) {
-            std::string sql{"INSERT INTO " + table_name + " (time, request, duration, user, ip_address, action, user_agent) VALUES "};
-
-            for (std::size_t i = 0; i < messages.size(); ++i) {
-                sql += messages[i];
-
-                if (i < (messages.size() - 1))
-                    sql += ",";
-            }
-
-            stmt->execute(sql);
-            messages.clear();
+        if (datasets.size() >= 100) {
+            insert_multi(stmt.get(), table_name, datasets);
+            count += datasets.size();
+            datasets.clear();
         }
     }
 
-    if (messages.size() > 0) {
-        std::string sql{"INSERT INTO " + table_name + " (time, request, duration, user, ip_address, action, user_agent) VALUES "};
-
-        for (std::size_t i = 0; i < messages.size(); ++i) {
-            sql += messages[i];
-
-            if (i < (messages.size() - 1))
-                sql += ",";
-        }
-
-        stmt->execute(sql);
+    if (datasets.size() > 0) {
+        insert_multi(stmt.get(), table_name, datasets);
+        count += datasets.size();
     }
 
     stmt.release();
