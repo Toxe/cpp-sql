@@ -11,6 +11,8 @@
 
 using namespace std::chrono_literals;
 
+constexpr int number_of_values_per_insert = 1000;
+
 void warmup(const std::string& filename)
 {
     std::ifstream in{filename};
@@ -107,7 +109,7 @@ void import_data_combined_inserts(sql::Connection* con, const std::string& table
             break;
         }
 
-        if (datasets.size() >= 100) {
+        if (datasets.size() == number_of_values_per_insert) {
             insert_multi(stmt.get(), table_name, datasets);
             count += datasets.size();
             datasets.clear();

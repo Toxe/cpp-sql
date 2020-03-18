@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 
+constexpr int number_of_values_per_insert = 1000;
+
 void insert_multi(const std::vector<std::string>& lines)
 {
     std::string sql{"INSERT INTO performance (time, request, duration, user, ip_address, action, user_agent) VALUES\n"};
@@ -54,7 +56,7 @@ int main(int argc, char* argv[])
 
         lines.emplace_back("(\"" + s1 + "\"," + s2 + "," + s3 + "," + s4 + ",\"" + s5 + "\",\"" + s6 + "\",\"" + s7 + "\")");
 
-        if (lines.size() == 100) {
+        if (lines.size() == number_of_values_per_insert) {
             insert_multi(lines);
             lines.clear();
         }
