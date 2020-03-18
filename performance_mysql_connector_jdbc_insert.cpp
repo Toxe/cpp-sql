@@ -10,7 +10,7 @@ void warmup(const std::string& filename)
     std::ifstream in{filename};
     std::string line;
 
-    std::cout << "Warmup (" << filename << ")...\n";
+    std::cout << "* Warmup (" << filename << ")...\n";
 
     while (std::getline(in, line))
         ;
@@ -48,7 +48,7 @@ sql::ConnectOptionsMap read_mysql_config(const char* filename)
 
 void import_data_single_inserts(sql::Connection* con, const std::string& table_name, const std::string& filename)
 {
-    std::cout << "Import data (single INSERTs)...\n";
+    std::cout << "* Import data (single INSERTs)...\n";
 
     std::ifstream in{filename};
     int count = 0;
@@ -74,12 +74,12 @@ void import_data_single_inserts(sql::Connection* con, const std::string& table_n
     stmt.release();
 
     auto t1 = std::chrono::high_resolution_clock::now();
-    std::cout << "--> Imported " << count << " rows in " << std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0).count() << " ms\n";
+    std::cout << "  --> Imported " << count << " rows in " << std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0).count() << " ms\n";
 }
 
 void import_data_combined_inserts(sql::Connection* con, const std::string& table_name, const std::string& filename)
 {
-    std::cout << "Import data (combined INSERTs)...\n";
+    std::cout << "* Import data (combined INSERTs)...\n";
 
     std::vector<std::string> messages;
     std::ifstream in{filename};
@@ -131,7 +131,7 @@ void import_data_combined_inserts(sql::Connection* con, const std::string& table
     stmt.release();
 
     auto t1 = std::chrono::high_resolution_clock::now();
-    std::cout << "--> Imported " << count << " rows in " << std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0).count() << " ms\n";
+    std::cout << "  --> Imported " << count << " rows in " << std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0).count() << " ms\n";
 }
 
 void drop_table(sql::Connection* con, const std::string& table_name)
