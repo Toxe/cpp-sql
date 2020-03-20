@@ -65,7 +65,7 @@ void import(sqlpp::mysql::connection& db, const std::string& filename)
 
     std::ifstream in{filename};
     int count = 0;
-    auto time = date::sys_seconds{};
+    auto time = std::chrono::time_point<std::chrono::system_clock, std::chrono::microseconds>{};
     auto t0 = std::chrono::high_resolution_clock::now();
 
     Performance::Performance performance{};
