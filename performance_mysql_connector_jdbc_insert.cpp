@@ -54,38 +54,13 @@ sql::ConnectOptionsMap read_mysql_config(const char* filename)
     return connection_properties;
 }
 
-struct Dataset {
-    Dataset(std::ifstream& in) {
-        if (!std::getline(in, s1, '\t')) throw std::runtime_error{"misformed input data"};
-        if (!std::getline(in, s2, '\t')) throw std::runtime_error{"misformed input data"};
-        if (!std::getline(in, s3, '\t')) throw std::runtime_error{"misformed input data"};
-        if (!std::getline(in, s4, '\t')) throw std::runtime_error{"misformed input data"};
-        if (!std::getline(in, s5, '\t')) throw std::runtime_error{"misformed input data"};
-        if (!std::getline(in, s6, '\t')) throw std::runtime_error{"misformed input data"};
-        if (!std::getline(in, s7))       throw std::runtime_error{"misformed input data"};
-    }
-
-    std::string s1;
-    std::string s2;
-    std::string s3;
-    std::string s4;
-    std::string s5;
-    std::string s6;
-    std::string s7;
-};
-
-void insert_multi(sql::Statement* stmt, const std::string& table_name, const std::vector<Dataset>& datasets)
+void insert_multi(sql::Statement* stmt, const std::string& table_name, const std::vector<std::string> values)
 {
-    std::string sql{"INSERT INTO " + table_name + " (time, request, duration, user, ip_address, action, user_agent) VALUES "};
+    std::string sql{"INSERT INTO " + table_name + " (time, request, duration, user, ip_address, action, user_agent) VALUES " + values[0]};
 
-    for (std::size_t i = 0; i < datasets.size(); ++i) {
-        const auto& ds = datasets[i];
-        std::string s{"(\"" + ds.s1 + "\"," + ds.s2 + "," + ds.s3 + "," + ds.s4 + ",\"" + ds.s5 + "\",\"" + ds.s6 + "\",\"" + ds.s7 + "\")"};
-
-        sql += s;
-
-        if (i < (datasets.size() - 1))
-            sql += ",";
+    for (auto it = std::next(values.cbegin()); it != values.cend(); ++it) {
+        sql += ",\n";
+        sql += *it;
     }
 
     stmt->execute(sql);
@@ -95,7 +70,7 @@ void import_data_combined_inserts(sql::Connection* con, const std::string& table
 {
     std::cout << "* Import data (combined INSERTs)...\n";
 
-    std::vector<Dataset> datasets;
+    std::vector<std::string> values;
     std::ifstream in{filename};
     int count = 0;
     auto t0 = std::chrono::high_resolution_clock::now();
@@ -103,22 +78,26 @@ void import_data_combined_inserts(sql::Connection* con, const std::string& table
     std::unique_ptr<sql::Statement> stmt(con->createStatement());
 
     while (in) {
-        try {
-            datasets.emplace_back(in);
-        } catch (std::runtime_error& e) {
-            break;
-        }
+        std::string s1;  if (!std::getline(in, s1, '\t')) break;
+        std::string s2;  if (!std::getline(in, s2, '\t')) break;
+        std::string s3;  if (!std::getline(in, s3, '\t')) break;
+        std::string s4;  if (!std::getline(in, s4, '\t')) break;
+        std::string s5;  if (!std::getline(in, s5, '\t')) break;
+        std::string s6;  if (!std::getline(in, s6, '\t')) break;
+        std::string s7;  if (!std::getline(in, s7))       break;
 
-        if (datasets.size() == number_of_values_per_insert) {
-            insert_multi(stmt.get(), table_name, datasets);
-            count += datasets.size();
-            datasets.clear();
+        values.emplace_back("(\"" + s1 + "\"," + s2 + "," + s3 + "," + s4 + ",\"" + s5 + "\",\"" + s6 + "\",\"" + s7 + "\")");
+
+        if (values.size() == number_of_values_per_insert) {
+            insert_multi(stmt.get(), table_name, values);
+            count += values.size();
+            values.clear();
         }
     }
 
-    if (datasets.size() > 0) {
-        insert_multi(stmt.get(), table_name, datasets);
-        count += datasets.size();
+    if (values.size() > 0) {
+        insert_multi(stmt.get(), table_name, values);
+        count += values.size();
     }
 
     stmt.release();
