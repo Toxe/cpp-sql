@@ -61,7 +61,7 @@ std::shared_ptr<sqlpp::mysql::connection_config> read_mysql_config(const char* f
 
 void import(sqlpp::mysql::connection& db, const std::string& filename)
 {
-    std::cout << "* Import data...\n";
+    std::cout << "* Import data (single INSERTs)...\n";
 
     std::ifstream in{filename};
     int count = 0;
