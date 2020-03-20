@@ -52,6 +52,7 @@ endif()
 
 set(ALL_TARGETS
     sqlpp11_mysql
+    performance_sqlpp11_insert_single
     dump_ships_json
     generate_performance_data
     convert_performance_data_to_sql
@@ -83,6 +84,7 @@ endif()
 get_filename_component(date_INCLUDE_DIR ${HinnantDate_INCLUDE_FILE} DIRECTORY)
 
 target_include_directories(generate_performance_data PRIVATE ${date_INCLUDE_DIR})
+target_include_directories(performance_sqlpp11_insert_single PRIVATE ${date_INCLUDE_DIR})
 
 target_link_libraries(dump_ships_json PRIVATE nlohmann_json::nlohmann_json)
 target_link_libraries(generate_performance_data PRIVATE date::date date::tz)
@@ -90,10 +92,13 @@ target_link_libraries(generate_performance_data PRIVATE date::date date::tz)
 if(CMAKE_HOST_WIN32)
     # Windows
     target_link_libraries(sqlpp11_mysql PRIVATE nlohmann_json::nlohmann_json ${sqlpp11_mysql_LIBRARY} ${mariadb_LIBRARY})
+    target_link_libraries(performance_sqlpp11_insert_single PRIVATE nlohmann_json::nlohmann_json date::date date::tz ${sqlpp11_mysql_LIBRARY} ${mariadb_LIBRARY})
 elseif(CMAKE_HOST_APPLE)
     # macOS
     target_link_libraries(sqlpp11_mysql PRIVATE nlohmann_json::nlohmann_json ${sqlpp11_mysql_LIBRARY} ${mariadb_LIBRARY} unofficial::iconv::libiconv unofficial::iconv::libcharset)
+    target_link_libraries(performance_sqlpp11_insert_single PRIVATE nlohmann_json::nlohmann_json date::date date::tz ${sqlpp11_mysql_LIBRARY} ${mariadb_LIBRARY} unofficial::iconv::libiconv unofficial::iconv::libcharset)
 else()
     # Linux
     target_link_libraries(sqlpp11_mysql PRIVATE nlohmann_json::nlohmann_json ${sqlpp11_mysql_LIBRARY} ${mariadb_LIBRARY} Threads::Threads ${CMAKE_DL_LIBS})
+    target_link_libraries(performance_sqlpp11_insert_single PRIVATE nlohmann_json::nlohmann_json date::date date::tz ${sqlpp11_mysql_LIBRARY} ${mariadb_LIBRARY} Threads::Threads ${CMAKE_DL_LIBS})
 endif()
