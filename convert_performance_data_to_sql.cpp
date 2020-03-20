@@ -8,13 +8,11 @@ constexpr int number_of_values_per_insert = 1000;
 
 void insert_multi(const std::vector<std::string>& lines)
 {
-    std::string sql{"INSERT INTO performance (time, request, duration, user, ip_address, action, user_agent) VALUES\n"};
+    std::string sql{"INSERT INTO performance (time, request, duration, user, ip_address, action, user_agent) VALUES\n" + lines[0]};
 
-    for (std::size_t i = 0; i < lines.size(); ++i) {
-        sql += lines[i];
-
-        if (i < (lines.size() - 1))
-            sql += ",\n";
+    for (auto it = std::next(lines.cbegin()); it != lines.cend(); ++it) {
+        sql += ",\n";
+        sql += *it;
     }
 
     std::cout << sql << ";\n";
