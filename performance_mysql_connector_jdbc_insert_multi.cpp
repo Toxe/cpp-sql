@@ -66,7 +66,7 @@ void insert_multi(sql::Statement* stmt, const std::string& table_name, const std
     stmt->execute(sql);
 }
 
-void import_data_combined_inserts(sql::Connection* con, const std::string& table_name, const std::string& filename)
+void import(sql::Connection* con, const std::string& table_name, const std::string& filename)
 {
     std::cout << "* Import data (combined INSERTs)...\n";
 
@@ -158,5 +158,5 @@ int main(int argc, char* argv[])
 
     drop_table(con.get(), "performance");
     create_table(con.get(), "performance");
-    import_data_combined_inserts(con.get(), "performance", performance_data_filename);
+    import(con.get(), "performance", performance_data_filename);
 }

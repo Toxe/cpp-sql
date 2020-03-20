@@ -59,7 +59,7 @@ std::shared_ptr<sqlpp::mysql::connection_config> read_mysql_config(const char* f
     return config;
 }
 
-void import_data_combined_inserts(sqlpp::mysql::connection& db, const std::string& filename)
+void import(sqlpp::mysql::connection& db, const std::string& filename)
 {
     std::cout << "* Import data...\n";
 
@@ -137,5 +137,5 @@ int main(int argc, char* argv[])
 
     drop_table(db, "performance");
     create_table(db, "performance");
-    import_data_combined_inserts(db, performance_data_filename);
+    import(db, performance_data_filename);
 }
