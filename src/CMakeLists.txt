@@ -32,12 +32,16 @@ add_executable(convert_performance_data_to_sql convert_performance_data_to_sql.c
 add_executable(sqlpp11_mysql sqlpp11_mysql.cpp include/ships.h)
 add_executable(performance_sqlpp11_insert_multi performance_sqlpp11_insert_multi.cpp include/performance.h)
 add_executable(performance_sqlpp11_insert_single performance_sqlpp11_insert_single.cpp include/performance.h)
-add_executable(mysql_connector_jdbc mysql_connector_jdbc.cpp)
-add_executable(performance_mysql_connector_jdbc_insert_multi performance_mysql_connector_jdbc_insert_multi.cpp)
-add_executable(performance_mysql_connector_jdbc_insert_single performance_mysql_connector_jdbc_insert_single.cpp)
 
 add_library(performance_sqlpp11_common STATIC performance_sqlpp11_common.cpp include/performance_sqlpp11_common.h)
-add_library(performance_mysql_connector_jdbc_common STATIC performance_mysql_connector_jdbc_common.cpp include/performance_mysql_connector_jdbc_common.h)
+
+if(ALL_TARGETS_MYSQL_CONNECTOR_CPP)
+    add_executable(mysql_connector_jdbc mysql_connector_jdbc.cpp)
+    add_executable(performance_mysql_connector_jdbc_insert_multi performance_mysql_connector_jdbc_insert_multi.cpp)
+    add_executable(performance_mysql_connector_jdbc_insert_single performance_mysql_connector_jdbc_insert_single.cpp)
+
+    add_library(performance_mysql_connector_jdbc_common STATIC performance_mysql_connector_jdbc_common.cpp include/performance_mysql_connector_jdbc_common.h)
+endif()
 
 # common options for all targets
 foreach(target ${ALL_TARGETS})
