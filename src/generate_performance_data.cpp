@@ -4,8 +4,9 @@
 #include <random>
 #include <stdexcept>
 #include <string>
-#include "date.h"
-#include "tz.h"
+
+#include <date.h>
+#include <tz.h>
 
 struct Generator {
     Generator(const std::vector<std::string>& postfixes, std::mt19937& gen, int min_duratiton, int max_duration)

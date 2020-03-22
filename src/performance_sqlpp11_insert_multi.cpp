@@ -2,17 +2,19 @@
 #include <fstream>
 #include <iostream>
 #include <memory>
-#include <stdexcept>
 #include <sstream>
+#include <stdexcept>
 #include <string>
 #include <thread>
 #include <vector>
+
+#include <date.h>
 #include <sqlpp11/mysql/mysql.h>
 #include <sqlpp11/sqlpp11.h>
-#include "performance_sqlpp11_common.h"
-#include "date.h"
-#include "tz.h"
+#include <tz.h>
+
 #include "performance.h"
+#include "performance_sqlpp11_common.h"
 
 constexpr int number_of_values_per_insert = 1000;
 

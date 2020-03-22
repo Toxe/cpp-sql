@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <string>
+
 #include <mysql/jdbc.h>
 
 sql::ConnectOptionsMap read_mysql_config(const char* filename);

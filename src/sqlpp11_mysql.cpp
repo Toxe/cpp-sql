@@ -1,8 +1,10 @@
 #include <fstream>
 #include <iostream>
+
 #include <nlohmann/json.hpp>
-#include <sqlpp11/sqlpp11.h>
 #include <sqlpp11/mysql/mysql.h>
+#include <sqlpp11/sqlpp11.h>
+
 #include "ships.h"
 
 // Read JSON config file.

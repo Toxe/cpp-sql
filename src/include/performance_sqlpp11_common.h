@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <string>
+
 #include <sqlpp11/mysql/mysql.h>
 
 std::shared_ptr<sqlpp::mysql::connection_config> read_mysql_config(const char* filename);

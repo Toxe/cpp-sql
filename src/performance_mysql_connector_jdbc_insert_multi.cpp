@@ -6,7 +6,9 @@
 #include <string>
 #include <thread>
 #include <vector>
+
 #include <mysql/jdbc.h>
+
 #include "performance_mysql_connector_jdbc_common.h"
 
 constexpr int number_of_values_per_insert = 1000;

@@ -6,7 +6,9 @@
 #include <string>
 #include <thread>
 #include <vector>
+
 #include <mysql/jdbc.h>
+
 #include "performance_mysql_connector_jdbc_common.h"
 
 void import(sql::Connection* con, const std::string& table_name, const std::string& filename)

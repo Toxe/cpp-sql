@@ -1,3 +1,5 @@
+#include "performance_mysql_connector_jdbc_common.h"
+
 #include <chrono>
 #include <fstream>
 #include <iostream>
@@ -6,9 +8,9 @@
 #include <string>
 #include <thread>
 #include <vector>
+
 #include <mysql/jdbc.h>
 #include <nlohmann/json.hpp>
-#include "performance_mysql_connector_jdbc_common.h"
 
 using namespace std::chrono_literals;
 

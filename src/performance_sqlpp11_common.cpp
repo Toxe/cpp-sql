@@ -1,18 +1,20 @@
+#include "performance_sqlpp11_common.h"
+
 #include <chrono>
 #include <fstream>
 #include <iostream>
 #include <memory>
-#include <stdexcept>
 #include <sstream>
+#include <stdexcept>
 #include <string>
 #include <thread>
 #include <vector>
+
+#include <date.h>
 #include <nlohmann/json.hpp>
-#include <sqlpp11/sqlpp11.h>
 #include <sqlpp11/mysql/mysql.h>
-#include "performance_sqlpp11_common.h"
-#include "date.h"
-#include "tz.h"
+#include <sqlpp11/sqlpp11.h>
+#include <tz.h>
 
 using namespace std::chrono_literals;
 
