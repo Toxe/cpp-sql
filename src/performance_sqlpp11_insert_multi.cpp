@@ -5,8 +5,6 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
-#include <thread>
-#include <vector>
 
 #include <date.h>
 #include <sqlpp11/mysql/mysql.h>

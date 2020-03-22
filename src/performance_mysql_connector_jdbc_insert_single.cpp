@@ -4,8 +4,6 @@
 #include <memory>
 #include <stdexcept>
 #include <string>
-#include <thread>
-#include <vector>
 
 #include <mysql/jdbc.h>
 

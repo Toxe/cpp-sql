@@ -4,17 +4,12 @@
 #include <fstream>
 #include <iostream>
 #include <memory>
-#include <sstream>
-#include <stdexcept>
 #include <string>
 #include <thread>
-#include <vector>
 
-#include <date.h>
 #include <nlohmann/json.hpp>
 #include <sqlpp11/mysql/mysql.h>
 #include <sqlpp11/sqlpp11.h>
-#include <tz.h>
 
 using namespace std::chrono_literals;
 
