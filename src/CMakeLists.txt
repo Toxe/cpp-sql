@@ -5,6 +5,7 @@ set(ALL_TARGETS_SQLPP11
     performance_sqlpp11_insert_multi
     performance_sqlpp11_insert_single
     performance_sqlpp11_select
+    performance_sqlpp11_select_empty
 )
 
 # all MySQL Connector/C++ targets, if they can be built
@@ -36,6 +37,7 @@ add_executable(sqlpp11_mysql sqlpp11_mysql.cpp include/ships.h)
 add_executable(performance_sqlpp11_insert_multi performance_sqlpp11_insert_multi.cpp include/performance.h)
 add_executable(performance_sqlpp11_insert_single performance_sqlpp11_insert_single.cpp include/performance.h)
 add_executable(performance_sqlpp11_select performance_sqlpp11_select.cpp include/performance.h)
+add_executable(performance_sqlpp11_select_empty performance_sqlpp11_select_empty.cpp include/performance.h)
 
 add_library(performance_sqlpp11_common STATIC performance_sqlpp11_common.cpp include/performance_sqlpp11_common.h)
 
@@ -71,6 +73,7 @@ target_include_directories(sqlpp11_mysql PRIVATE include ${date_INCLUDE_DIR})
 target_include_directories(performance_sqlpp11_insert_multi PRIVATE include ${date_INCLUDE_DIR})
 target_include_directories(performance_sqlpp11_insert_single PRIVATE include ${date_INCLUDE_DIR})
 target_include_directories(performance_sqlpp11_select PRIVATE include ${date_INCLUDE_DIR})
+target_include_directories(performance_sqlpp11_select_empty PRIVATE include ${date_INCLUDE_DIR})
 
 if(CMAKE_HOST_WIN32)
     # Windows
@@ -80,6 +83,7 @@ if(CMAKE_HOST_WIN32)
     target_link_libraries(performance_sqlpp11_insert_multi PRIVATE performance_sqlpp11_common date::date date::tz ${sqlpp11_mysql_LIBRARY} ${mariadb_LIBRARY})
     target_link_libraries(performance_sqlpp11_insert_single PRIVATE performance_sqlpp11_common date::date date::tz ${sqlpp11_mysql_LIBRARY} ${mariadb_LIBRARY})
     target_link_libraries(performance_sqlpp11_select PRIVATE performance_sqlpp11_common date::date date::tz ${sqlpp11_mysql_LIBRARY} ${mariadb_LIBRARY})
+    target_link_libraries(performance_sqlpp11_select_empty PRIVATE performance_sqlpp11_common date::date date::tz ${sqlpp11_mysql_LIBRARY} ${mariadb_LIBRARY})
 elseif(CMAKE_HOST_APPLE)
     # macOS
     target_link_libraries(performance_sqlpp11_common PRIVATE nlohmann_json::nlohmann_json ${sqlpp11_mysql_LIBRARY} ${mariadb_LIBRARY} unofficial::iconv::libiconv unofficial::iconv::libcharset)
@@ -88,6 +92,7 @@ elseif(CMAKE_HOST_APPLE)
     target_link_libraries(performance_sqlpp11_insert_multi PRIVATE performance_sqlpp11_common date::date date::tz ${sqlpp11_mysql_LIBRARY} ${mariadb_LIBRARY} unofficial::iconv::libiconv unofficial::iconv::libcharset)
     target_link_libraries(performance_sqlpp11_insert_single PRIVATE performance_sqlpp11_common date::date date::tz ${sqlpp11_mysql_LIBRARY} ${mariadb_LIBRARY} unofficial::iconv::libiconv unofficial::iconv::libcharset)
     target_link_libraries(performance_sqlpp11_select PRIVATE performance_sqlpp11_common date::date date::tz ${sqlpp11_mysql_LIBRARY} ${mariadb_LIBRARY} unofficial::iconv::libiconv unofficial::iconv::libcharset)
+    target_link_libraries(performance_sqlpp11_select_empty PRIVATE performance_sqlpp11_common date::date date::tz ${sqlpp11_mysql_LIBRARY} ${mariadb_LIBRARY} unofficial::iconv::libiconv unofficial::iconv::libcharset)
 else()
     # Linux
     target_link_libraries(performance_sqlpp11_common PRIVATE nlohmann_json::nlohmann_json ${sqlpp11_mysql_LIBRARY} ${mariadb_LIBRARY} Threads::Threads ${CMAKE_DL_LIBS})
@@ -96,6 +101,15 @@ else()
     target_link_libraries(performance_sqlpp11_insert_multi PRIVATE performance_sqlpp11_common date::date date::tz ${sqlpp11_mysql_LIBRARY} ${mariadb_LIBRARY} Threads::Threads ${CMAKE_DL_LIBS})
     target_link_libraries(performance_sqlpp11_insert_single PRIVATE performance_sqlpp11_common date::date date::tz ${sqlpp11_mysql_LIBRARY} ${mariadb_LIBRARY} Threads::Threads ${CMAKE_DL_LIBS})
     target_link_libraries(performance_sqlpp11_select PRIVATE performance_sqlpp11_common date::date date::tz ${sqlpp11_mysql_LIBRARY} ${mariadb_LIBRARY} Threads::Threads ${CMAKE_DL_LIBS})
+    target_link_libraries(performance_sqlpp11_select_empty PRIVATE performance_sqlpp11_common date::date date::tz ${sqlpp11_mysql_LIBRARY} ${mariadb_LIBRARY} Threads::Threads ${CMAKE_DL_LIBS})
+endif()
+
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+    target_compile_options(performance_sqlpp11_select_empty PRIVATE -Wno-unused-variable)
+endif()
+
+if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+    target_compile_options(performance_sqlpp11_select_empty PRIVATE /wd4189)
 endif()
 
 # options for MySQL Connector/C++ targets
@@ -114,4 +128,5 @@ if(ALL_TARGETS_MYSQL_CONNECTOR_CPP)
     target_link_libraries(performance_mysql_connector_jdbc_insert_multi PRIVATE performance_mysql_connector_jdbc_common ${LibMySQLCppConn_LIBRARY} ${libresolv})
     target_link_libraries(performance_mysql_connector_jdbc_insert_single PRIVATE performance_mysql_connector_jdbc_common ${LibMySQLCppConn_LIBRARY} ${libresolv})
     target_link_libraries(performance_mysql_connector_jdbc_select PRIVATE performance_mysql_connector_jdbc_common date::date date::tz ${LibMySQLCppConn_LIBRARY} ${libresolv})
+    target_link_libraries(performance_mysql_connector_jdbc_select_empty PRIVATE performance_mysql_connector_jdbc_common date::date date::tz ${LibMySQLCppConn_LIBRARY} ${libresolv})
 endif()
