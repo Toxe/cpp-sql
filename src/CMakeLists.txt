@@ -15,6 +15,7 @@ if(LibMySQLCppConn_LIBRARY AND LibMySQLCppConn_INCLUDE_DIR)
         performance_mysql_connector_jdbc_insert_multi
         performance_mysql_connector_jdbc_insert_single
         performance_mysql_connector_jdbc_select
+        performance_mysql_connector_jdbc_select_empty
     )
 endif()
 
@@ -43,6 +44,7 @@ if(ALL_TARGETS_MYSQL_CONNECTOR_CPP)
     add_executable(performance_mysql_connector_jdbc_insert_multi performance_mysql_connector_jdbc_insert_multi.cpp)
     add_executable(performance_mysql_connector_jdbc_insert_single performance_mysql_connector_jdbc_insert_single.cpp)
     add_executable(performance_mysql_connector_jdbc_select performance_mysql_connector_jdbc_select.cpp)
+    add_executable(performance_mysql_connector_jdbc_select_empty performance_mysql_connector_jdbc_select_empty.cpp)
 
     add_library(performance_mysql_connector_jdbc_common STATIC performance_mysql_connector_jdbc_common.cpp include/performance_mysql_connector_jdbc_common.h)
 endif()
@@ -104,6 +106,7 @@ if(ALL_TARGETS_MYSQL_CONNECTOR_CPP)
     target_include_directories(performance_mysql_connector_jdbc_insert_multi PRIVATE ${LibMySQLCppConn_INCLUDE_DIR} ${Boost_INCLUDE_DIRS})
     target_include_directories(performance_mysql_connector_jdbc_insert_single PRIVATE ${LibMySQLCppConn_INCLUDE_DIR} ${Boost_INCLUDE_DIRS})
     target_include_directories(performance_mysql_connector_jdbc_select PRIVATE ${LibMySQLCppConn_INCLUDE_DIR} ${Boost_INCLUDE_DIRS} ${date_INCLUDE_DIR})
+    target_include_directories(performance_mysql_connector_jdbc_select_empty PRIVATE ${LibMySQLCppConn_INCLUDE_DIR} ${Boost_INCLUDE_DIRS} ${date_INCLUDE_DIR})
 
     target_link_libraries(performance_mysql_connector_jdbc_common PRIVATE nlohmann_json::nlohmann_json ${LibMySQLCppConn_LIBRARY} ${libresolv})
 
