@@ -18,7 +18,7 @@ constexpr int number_of_values_per_insert = 1000;
 
 void import(sqlpp::mysql::connection& db, const std::string& filename)
 {
-    std::cout << "* Import data (single INSERTs)...\n";
+    std::cout << "* Import data (combined INSERTs)...\n";
 
     std::ifstream in{filename};
     int count = 0;
